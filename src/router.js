@@ -8,6 +8,9 @@ import AddTutorial from "./views/AddTutorial.vue";
 import ViewTutorial from "./views/ViewTutorial.vue";
 import AddLesson from "./views/AddLesson.vue";
 import EditLesson from "./views/EditLesson.vue";
+import ExercisesList from "./views/ExercisesList.vue";
+import AddExercise from "./views/AddExercise.vue";
+import EditExercise from "./views/EditExercise.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +53,22 @@ const router = createRouter({
       path: "/editLesson/:tutorialId/:lessonId",
       name: "editLesson",
       component: EditLesson,
+      props: true,
+    },
+    {
+      path: "/exercises",
+      name: "exercises",
+      component: ExercisesList,
+    },
+    {
+      path: "/exercises/add",
+      name: "addExercise",
+      component: AddExercise,
+    },
+    {
+      path: "/exercises/edit/:id",
+      name: "editExercise",
+      component: EditExercise,
       props: true,
     },
   ],

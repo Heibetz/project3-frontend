@@ -1,0 +1,21 @@
+import apiClient from "./services.js";
+
+export default {
+  getAll(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const path = query ? `/exercises?${query}` : "/exercises";
+    return apiClient.get(path);
+  },
+  get(id) {
+    return apiClient.get(`/exercises/${id}`);
+  },
+  create(data) {
+    return apiClient.post("/exercises", data);
+  },
+  update(id, data) {
+    return apiClient.put(`/exercises/${id}`, data);
+  },
+  delete(id) {
+    return apiClient.delete(`/exercises/${id}`);
+  },
+};

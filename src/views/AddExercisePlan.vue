@@ -13,6 +13,7 @@ const form = ref({
   description: "",
   is_standard: false,
   created_by: user.userId,
+  day: null,
   exercises: [],
 });
 const availableExercises = ref([]);
@@ -118,6 +119,15 @@ onMounted(() => {
               label="Mark as Standard Plan"
               class="mb-4"
             ></v-checkbox>
+
+            <v-select
+              v-model="form.day"
+              :items="['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']"
+              label="Workout Day (Optional)"
+              variant="outlined"
+              class="mb-4"
+              clearable
+            ></v-select>
 
             <v-alert v-if="message" type="error" class="mb-4">
               {{ message }}

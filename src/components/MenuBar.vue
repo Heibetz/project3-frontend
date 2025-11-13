@@ -56,6 +56,7 @@ onMounted(() => {
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <div v-if="user">
+        <v-btn class="mx-2" :to="{ name: 'users' }"> Users </v-btn>
         <v-btn class="mx-2" :to="{ name: 'exercises' }"> Exercises </v-btn>
         <v-btn class="mx-2" :to="{ name: 'exercisePlans' }"> Exercise Plans </v-btn>
       </div>

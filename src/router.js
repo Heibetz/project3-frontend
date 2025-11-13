@@ -7,6 +7,9 @@ import EditExercise from "./views/EditExercise.vue";
 import ExercisePlansList from "./views/ExercisePlansList.vue";
 import AddExercisePlan from "./views/AddExercisePlan.vue";
 import EditExercisePlan from "./views/EditExercisePlan.vue";
+import UsersList from "./views/UsersList.vue";
+import AddUser from "./views/AddUser.vue";
+import EditUser from "./views/EditUser.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +19,22 @@ const router = createRouter({
       alias: "/login",
       name: "login",
       component: Login,
+    },
+    {
+      path: "/users",
+      name: "users",
+      component: UsersList,
+    },
+    {
+      path: "/users/add",
+      name: "addUser",
+      component: AddUser,
+    },
+    {
+      path: "/users/edit/:id",
+      name: "editUser",
+      component: EditUser,
+      props: true,
     },
     {
       path: "/exercises",

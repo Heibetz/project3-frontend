@@ -7,6 +7,7 @@ import EditExercise from "./views/EditExercise.vue";
 import ExercisePlansList from "./views/ExercisePlansList.vue";
 import AddExercisePlan from "./views/AddExercisePlan.vue";
 import EditExercisePlan from "./views/EditExercisePlan.vue";
+import TodaysWorkout from "./views/TodaysWorkout.vue";
 import UsersList from "./views/UsersList.vue";
 import AddUser from "./views/AddUser.vue";
 import EditUser from "./views/EditUser.vue";
@@ -51,6 +52,11 @@ const router = createRouter({
       name: "editExercise",
       component: EditExercise,
       props: true,
+    },
+    {
+      path: "/workout",
+      name: "workout",
+      component: TodaysWorkout,
     },
     {
       path: "/exercise-plans",

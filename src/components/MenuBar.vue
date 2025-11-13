@@ -7,7 +7,7 @@ import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const user = ref(null);
-const title = ref("Tutorials");
+const title = ref("Exercises");
 const initials = ref("");
 const name = ref("");
 const logoURL = ref("");
@@ -42,7 +42,7 @@ onMounted(() => {
 <template>
   <div>
     <v-app-bar app>
-      <router-link :to="{ name: 'tutorials' }">
+      <router-link :to="{ name: 'exercises' }">
         <v-img
           class="mx-2"
           :src="logoURL"
@@ -56,8 +56,6 @@ onMounted(() => {
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <div v-if="user">
-        <v-btn class="mx-2" :to="{ name: 'tutorials' }"> List </v-btn>
-        <v-btn class="mx-2" :to="{ name: 'add' }"> Add Tutorial </v-btn>
         <v-btn class="mx-2" :to="{ name: 'exercises' }"> Exercises </v-btn>
         <v-btn class="mx-2" :to="{ name: 'exercisePlans' }"> Exercise Plans </v-btn>
       </div>

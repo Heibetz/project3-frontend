@@ -9,6 +9,12 @@ const fName = ref("");
 const lName = ref("");
 const user = ref({});
 
+const roleToRoute = (role) => {
+  if (role === "admin") return { name: "adminDashboard" };
+  if (role === "coach") return { name: "coachDashboard" };
+  return { name: "athleteDashboard" };
+};
+
 const loginWithGoogle = () => {
   window.handleCredentialResponse = handleCredentialResponse;
   const client = import.meta.env.VITE_APP_CLIENT_ID;
@@ -38,7 +44,7 @@ const handleCredentialResponse = async (response) => {
       Utils.setStore("user", user.value);
       fName.value = user.value.fName;
       lName.value = user.value.lName;
-      router.push({ name: "exercises" });
+      router.push(roleToRoute(user.value.role));
     })
     .catch((error) => {
       console.log("error", error);

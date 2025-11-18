@@ -185,12 +185,11 @@ retrieveExercisePlans();
                                 Reps: {{ exercise.exercisePlanExercise.reps }}
                               </v-chip>
                               <v-chip 
-                                v-if="exercise.exercisePlanExercise?.duration" 
                                 size="small" 
                                 variant="outlined"
                                 color="warning"
                               >
-                                {{ exercise.exercisePlanExercise.duration }}
+                                Duration: {{ exercise.exercisePlanExercise?.duration || 'No time limit' }}
                               </v-chip>
                             </div>
                             <div v-if="exercise.description" class="text-caption text-grey">

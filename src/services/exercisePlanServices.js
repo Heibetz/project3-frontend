@@ -21,6 +21,9 @@ export default {
   addExercise(planId, exerciseData) {
     return apiClient.post(`/exercise-plans/${planId}/exercises`, exerciseData);
   },
+  updateExercise(planId, exerciseId, exerciseData) {
+    return apiClient.put(`/exercise-plans/${planId}/exercises/${exerciseId}`, exerciseData);
+  },
   removeExercise(planId, exerciseId) {
     return apiClient.delete(`/exercise-plans/${planId}/exercises/${exerciseId}`);
   },

@@ -42,7 +42,7 @@ onMounted(() => {
 <template>
   <div>
     <v-app-bar app>
-      <router-link :to="{ name: 'login' }">
+      <router-link :to="{ name: 'exercises' }">
         <v-img
           class="mx-2"
           :src="logoURL"
@@ -56,24 +56,10 @@ onMounted(() => {
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <div v-if="user">
-        <!-- Dashboard always available -->
-        <v-btn class="mx-2" :to="user.role === 'admin' ? { name: 'adminDashboard' } : (user.role === 'coach' ? { name: 'coachDashboard' } : { name: 'athleteDashboard' })">
-          Dashboard
-        </v-btn>
-
-        <!-- Athlete: show Today's Workout only -->
-        <template v-if="user.role === 'athlete'">
-          <v-btn class="mx-2" :to="{ name: 'workout' }"> Today's Workout </v-btn>
-          <v-btn class="mx-2" :to="{ name: 'editProfile' }"> Edit Profile </v-btn>
-          <v-btn class="mx-2" :to="{ name: 'users' }"> Users </v-btn>
-        </template>
-
-        <!-- Coach/Admin: show management links -->
-        <template v-else>
-          <v-btn class="mx-2" :to="{ name: 'users' }"> Users </v-btn>
-          <v-btn class="mx-2" :to="{ name: 'exercises' }"> Exercises </v-btn>
-          <v-btn class="mx-2" :to="{ name: 'exercisePlans' }"> Exercise Plans </v-btn>
-        </template>
+        <v-btn class="mx-2" :to="{ name: 'workout' }"> Today's Workout </v-btn>
+        <v-btn class="mx-2" :to="{ name: 'users' }"> Users </v-btn>
+        <v-btn class="mx-2" :to="{ name: 'exercises' }"> Exercises </v-btn>
+        <v-btn class="mx-2" :to="{ name: 'exercisePlans' }"> Exercise Plans </v-btn>
       </div>
       <v-menu bottom min-width="200px" rounded offset-y v-if="user">
         <template v-slot:activator="{ props }">

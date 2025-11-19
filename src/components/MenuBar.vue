@@ -16,8 +16,11 @@ const resetMenu = () => {
   user.value = null;
   user.value = Utils.getStore("user");
   if (user.value) {
-    initials.value = user.value.fName[0] + user.value.lName[0];
-    name.value = user.value.fName + " " + user.value.lName;
+    // Safety check for undefined fName/lName
+    const firstName = user.value.fName || "";
+    const lastName = user.value.lName || "";
+    initials.value = (firstName[0] || "") + (lastName[0] || "");
+    name.value = firstName + " " + lastName;
   }
 };
 
@@ -48,7 +51,7 @@ onMounted(() => {
           :src="logoURL"
           height="50"
           width="50"
-          contain
+          cover
         ></v-img>
       </router-link>
       <v-toolbar-title class="title">
@@ -64,12 +67,19 @@ onMounted(() => {
         <!-- Athlete: show Today's Workout only -->
         <template v-if="user.role === 'athlete'">
           <v-btn class="mx-2" :to="{ name: 'workout' }"> Today's Workout </v-btn>
-          <v-btn class="mx-2" :to="{ name: 'editProfile' }"> Edit Profile </v-btn>
+          <v-btn class="mx-2" :to="{ name: 'editUser', params: { id: user.userId } }"> Edit Profile </v-btn>
           <v-btn class="mx-2" :to="{ name: 'users' }"> Users </v-btn>
         </template>
 
-        <!-- Coach/Admin: show management links -->
-        <template v-else>
+        <!-- Coach: show management links with Athletes -->
+        <template v-else-if="user.role === 'coach'">
+          <v-btn class="mx-2" :to="{ name: 'athletes' }"> Athletes </v-btn>
+          <v-btn class="mx-2" :to="{ name: 'exercises' }"> Exercises </v-btn>
+          <v-btn class="mx-2" :to="{ name: 'exercisePlans' }"> Exercise Plans </v-btn>
+        </template>
+
+        <!-- Admin: show management links with All Users -->
+        <template v-else-if="user.role === 'admin'">
           <v-btn class="mx-2" :to="{ name: 'users' }"> Users </v-btn>
           <v-btn class="mx-2" :to="{ name: 'exercises' }"> Exercises </v-btn>
           <v-btn class="mx-2" :to="{ name: 'exercisePlans' }"> Exercise Plans </v-btn>

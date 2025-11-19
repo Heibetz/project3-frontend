@@ -9,6 +9,7 @@ import AddExercisePlan from "./views/AddExercisePlan.vue";
 import EditExercisePlan from "./views/EditExercisePlan.vue";
 import TodaysWorkout from "./views/TodaysWorkout.vue";
 import UsersList from "./views/UsersList.vue";
+import AthletesList from "./views/AthletesList.vue";
 import AddUser from "./views/AddUser.vue";
 import EditUser from "./views/EditUser.vue";
 import AthleteDashboard from "./views/AthleteDashboard.vue";
@@ -46,6 +47,12 @@ const router = createRouter({
       path: "/users",
       name: "users",
       component: UsersList,
+    },
+    {
+      path: "/athletes",
+      name: "athletes",
+      component: AthletesList,
+      meta: { role: "coach" },
     },
     {
       path: "/users/add",

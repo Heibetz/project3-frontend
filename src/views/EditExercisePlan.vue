@@ -13,6 +13,7 @@ const form = ref({
   description: "",
   is_standard: false,
   day: null,
+  sport: "All",
 });
 const exercises = ref([]);
 const availableExercises = ref([]);
@@ -223,6 +224,14 @@ onMounted(() => {
               variant="outlined"
               class="mb-4"
               clearable
+            ></v-select>
+
+            <v-select
+              v-model="form.sport"
+              :items="['All', 'Baseball', 'Basketball', 'Football', 'Golf', 'Soccer', 'Swimming', 'Tennis', 'Track', 'Volleyball', 'Wrestling', 'Other']"
+              label="Sport"
+              variant="outlined"
+              class="mb-4"
             ></v-select>
 
             <v-alert v-if="message" :type="messageType" class="mb-4">

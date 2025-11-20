@@ -66,6 +66,11 @@ const router = createRouter({
       props: true,
     },
     {
+      path: "/settings",
+      name: "settings",
+      component: UserSettings,
+    },
+    {
       path: "/exercises",
       name: "exercises",
       component: ExercisesList,

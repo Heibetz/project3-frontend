@@ -105,8 +105,15 @@ onMounted(() => {
               <p class="text-caption mt-1">
                 {{ user.email }}
               </p>
+              <p class="text-caption" v-if="user.sport">
+                Sport: {{ user.sport }}
+              </p>
               <v-divider class="my-3"></v-divider>
-              <v-btn depressed rounded text @click="logout"> Logout </v-btn>
+              <v-btn depressed rounded variant="text" :to="{ name: 'settings' }" block class="mb-2">
+                <v-icon left small>mdi-cog</v-icon>
+                Settings
+              </v-btn>
+              <v-btn depressed rounded text @click="logout" block> Logout </v-btn>
             </div>
           </v-card-text>
         </v-card>

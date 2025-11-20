@@ -31,7 +31,8 @@ const allExercisesToday = computed(() => {
           type: exercise.type,
           exercisePlanExercise: exercise.exercisePlanExercise, // Keep the nested object
           planName: plan.name,
-          planDescription: plan.description
+          planDescription: plan.description,
+          planSport: plan.sport
         });
       });
     }
@@ -41,7 +42,16 @@ const allExercisesToday = computed(() => {
 
 const retrieveWorkoutPlans = () => {
   loading.value = true;
-  ExercisePlanServices.getAll({ created_by: user.userId })
+  const params = { 
+    created_by: user.userId
+  };
+  
+  // Add sport filter if user has a sport selected
+  if (user.sport) {
+    params.sport = user.sport;
+  }
+  
+  ExercisePlanServices.getAll(params)
     .then((response) => {
       exercisePlans.value = response.data;
       console.log("All exercise plans:", response.data);
@@ -138,6 +148,14 @@ onMounted(() => {
                   variant="outlined"
                 >
                   {{ plan.name }}
+                  <v-chip
+                    v-if="plan.sport"
+                    size="x-small"
+                    color="info"
+                    class="ml-1"
+                  >
+                    {{ plan.sport.toLowerCase() }}
+                  </v-chip>
                 </v-chip>
               </div>
             </div>
@@ -160,6 +178,15 @@ onMounted(() => {
                       <h4 class="text-h5 mb-1">{{ exercise.name }}</h4>
                       <div class="text-caption text-grey">
                         From: {{ exercise.planName }}
+                        <v-chip
+                          v-if="exercise.planSport"
+                          size="x-small"
+                          color="secondary"
+                          variant="outlined"
+                          class="ml-2"
+                        >
+                          {{ exercise.planSport.toLowerCase() }}
+                        </v-chip>
                         <v-chip
                           v-if="exercise.type"
                           size="x-small"

@@ -12,6 +12,7 @@ const headers = [
   { text: "Last Name", value: "lName" },
   { text: "Email", value: "email" },
   { text: "Role", value: "role" },
+  { text: "Sport", value: "sport" },
   { text: "Actions", value: "actions", sortable: false },
 ];
 
@@ -59,6 +60,7 @@ onMounted(fetchUsers);
           <th>Last Name</th>
           <th>Email</th>
           <th>Role</th>
+          <th>Sport</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -69,6 +71,7 @@ onMounted(fetchUsers);
           <td>{{ u.lName }}</td>
           <td>{{ u.email }}</td>
           <td>{{ u.role }}</td>
+          <td>{{ u.role === 'athlete' ? (u.sport?.toLowerCase() || "-") : "-" }}</td>
           <td>
             <v-btn size="small" class="mr-2" @click="goEdit(u.id)">Edit</v-btn>
             <v-btn size="small" color="error" @click="remove(u.id)">Delete</v-btn>

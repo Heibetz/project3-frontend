@@ -57,6 +57,13 @@ onMounted(fetch);
         label="Role"
         required
       />
+      <v-select
+        v-if="form.role === 'athlete'"
+        v-model="form.sport"
+        :items="['baseball', 'basketball', 'football', 'golf', 'soccer', 'swimming', 'tennis', 'track', 'volleyball', 'wrestling', 'other']"
+        label="Sport (Optional)"
+        clearable
+      />
 
       <v-btn type="submit" color="primary" :loading="saving" class="mr-2">
         Save

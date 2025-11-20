@@ -121,6 +121,13 @@ const router = createRouter({
       component: EditResult,
       props: true,
     },
+    {
+      path: "/athletes/:id/results",
+      name: "athleteResults",
+      component: ResultsList,
+      props: true,
+      meta: { role: "coach" },
+    },
   ],
 });
 

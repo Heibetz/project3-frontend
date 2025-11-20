@@ -23,10 +23,16 @@ const allExercisesToday = computed(() => {
   todaysPlans.value.forEach(plan => {
     if (plan.exercises && plan.exercises.length > 0) {
       plan.exercises.forEach(exercise => {
+        // Keep the exercisePlanExercise object intact for proper data access
         exercises.push({
-          ...exercise,
+          exercise_id: exercise.exercise_id,
+          name: exercise.name,
+          description: exercise.description,
+          type: exercise.type,
+          exercisePlanExercise: exercise.exercisePlanExercise, // Keep the nested object
           planName: plan.name,
-          planDescription: plan.description
+          planDescription: plan.description,
+          planSport: plan.sport
         });
       });
     }
@@ -36,9 +42,39 @@ const allExercisesToday = computed(() => {
 
 const retrieveWorkoutPlans = () => {
   loading.value = true;
-  ExercisePlanServices.getAll({ created_by: user.userId })
+  const params = { 
+    created_by: user.userId
+  };
+  
+  // Add sport filter if user has a sport selected
+  if (user.sport) {
+    params.sport = user.sport;
+  }
+  
+  ExercisePlanServices.getAll(params)
     .then((response) => {
       exercisePlans.value = response.data;
+      console.log("All exercise plans:", response.data);
+      console.log("Today is:", today.value);
+      console.log("Today's plans:", todaysPlans.value);
+      
+      // Debug individual exercises
+      todaysPlans.value.forEach(plan => {
+        console.log(`Plan "${plan.name}" exercises:`, plan.exercises);
+        if (plan.exercises) {
+          plan.exercises.forEach(ex => {
+            console.log(`Exercise "${ex.name}":`, {
+              exercisePlanExercise: ex.exercisePlanExercise,
+              sets: ex.exercisePlanExercise?.sets,
+              reps: ex.exercisePlanExercise?.reps,
+              duration: ex.exercisePlanExercise?.duration
+            });
+          });
+        }
+      });
+      
+      console.log("All exercises today:", allExercisesToday.value);
+      
       if (todaysPlans.value.length === 0) {
         message.value = `No workouts scheduled for ${today.value}`;
       } else {
@@ -47,6 +83,7 @@ const retrieveWorkoutPlans = () => {
       loading.value = false;
     })
     .catch((e) => {
+      console.error("Error loading workout plans:", e);
       message.value = e.response?.data?.message || "Error loading workout plans";
       loading.value = false;
     });
@@ -111,6 +148,14 @@ onMounted(() => {
                   variant="outlined"
                 >
                   {{ plan.name }}
+                  <v-chip
+                    v-if="plan.sport"
+                    size="x-small"
+                    color="info"
+                    class="ml-1"
+                  >
+                    {{ plan.sport.toLowerCase() }}
+                  </v-chip>
                 </v-chip>
               </div>
             </div>
@@ -133,6 +178,15 @@ onMounted(() => {
                       <h4 class="text-h5 mb-1">{{ exercise.name }}</h4>
                       <div class="text-caption text-grey">
                         From: {{ exercise.planName }}
+                        <v-chip
+                          v-if="exercise.planSport"
+                          size="x-small"
+                          color="secondary"
+                          variant="outlined"
+                          class="ml-2"
+                        >
+                          {{ exercise.planSport.toLowerCase() }}
+                        </v-chip>
                         <v-chip
                           v-if="exercise.type"
                           size="x-small"
@@ -160,7 +214,7 @@ onMounted(() => {
                         </v-card>
                       </v-col>
                       <v-col cols="12" sm="4">
-                        <v-card variant="tonal" color="secondary" class="text-center pa-3">
+                        <v-card variant="tonal" color="primary" class="text-center pa-3">
                           <div class="text-h4 font-weight-bold">
                             {{ exercise.exercisePlanExercise?.reps || '-' }}
                           </div>
@@ -168,9 +222,9 @@ onMounted(() => {
                         </v-card>
                       </v-col>
                       <v-col cols="12" sm="4">
-                        <v-card variant="tonal" color="warning" class="text-center pa-3">
+                        <v-card variant="tonal" color="info" class="text-center pa-3">
                           <div class="text-h6 font-weight-bold">
-                            {{ exercise.exercisePlanExercise?.duration || 'No time limit' }}
+                            {{ exercise.exercisePlanExercise?.duration || 'Rest as needed' }}
                           </div>
                           <div class="text-subtitle-2">DURATION</div>
                         </v-card>

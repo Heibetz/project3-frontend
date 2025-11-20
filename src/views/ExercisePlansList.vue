@@ -37,7 +37,14 @@ const togglePlanExpansion = (planId) => {
 };
 
 const retrieveExercisePlans = () => {
-  ExercisePlanServices.getAll({ created_by: user.userId })
+  const params = { created_by: user.userId };
+  
+  // Add sport filter if user has a sport selected
+  if (user.sport) {
+    params.sport = user.sport;
+  }
+  
+  ExercisePlanServices.getAll(params)
     .then((response) => {
       exercisePlans.value = response.data;
     })
@@ -90,6 +97,14 @@ retrieveExercisePlans();
                     class="ml-2"
                   >
                     {{ plan.day }}
+                  </v-chip>
+                  <v-chip
+                    v-if="plan.sport"
+                    size="small"
+                    color="info"
+                    class="ml-2"
+                  >
+                    {{ plan.sport }}
                   </v-chip>
                   <v-chip
                     v-if="plan.is_standard"
@@ -185,12 +200,11 @@ retrieveExercisePlans();
                                 Reps: {{ exercise.exercisePlanExercise.reps }}
                               </v-chip>
                               <v-chip 
-                                v-if="exercise.exercisePlanExercise?.duration" 
                                 size="small" 
                                 variant="outlined"
                                 color="warning"
                               >
-                                {{ exercise.exercisePlanExercise.duration }}
+                                Duration: {{ exercise.exercisePlanExercise?.duration || 'No time limit' }}
                               </v-chip>
                             </div>
                             <div v-if="exercise.description" class="text-caption text-grey">

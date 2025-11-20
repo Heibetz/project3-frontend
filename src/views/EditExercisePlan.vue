@@ -7,11 +7,13 @@ import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
 const message = ref("");
+const messageType = ref("error");
 const form = ref({
   name: "",
   description: "",
   is_standard: false,
   day: null,
+  sport: "All",
 });
 const exercises = ref([]);
 const availableExercises = ref([]);
@@ -21,6 +23,7 @@ const exerciseConfig = ref({
   reps: 10,
   duration: "",
 });
+const editingExercise = ref(null);
 
 const rules = {
   name: [
@@ -40,6 +43,7 @@ const loadExercisePlan = () => {
     })
     .catch((e) => {
       message.value = e.response?.data?.message || "Error loading exercise plan";
+      messageType.value = "error";
     });
 };
 
@@ -60,6 +64,7 @@ const updateExercisePlan = () => {
     })
     .catch((e) => {
       message.value = e.response?.data?.message || "Error updating exercise plan";
+      messageType.value = "error";
     });
 };
 
@@ -69,6 +74,8 @@ const addExerciseToPlan = () => {
     return;
   }
 
+  console.log("Selected exercise:", selectedExercise.value);
+  
   const exerciseData = {
     exercise_id: selectedExercise.value.exercise_id || selectedExercise.value.id,
     sets: exerciseConfig.value.sets,
@@ -76,8 +83,13 @@ const addExerciseToPlan = () => {
     duration: exerciseConfig.value.duration,
   };
 
+  console.log("Exercise data to send:", exerciseData);
+
   ExercisePlanServices.addExercise(route.params.id, exerciseData)
-    .then(() => {
+    .then((response) => {
+      console.log("Exercise added successfully:", response.data);
+      message.value = "Exercise added successfully!";
+      messageType.value = "success";
       exercises.value.push({
         ...selectedExercise.value,
         exercisePlanExercise: {
@@ -90,7 +102,10 @@ const addExerciseToPlan = () => {
       exerciseConfig.value = { sets: 3, reps: 10, duration: "" };
     })
     .catch((e) => {
+      console.error("Error adding exercise:", e);
+      console.error("Error response:", e.response?.data);
       message.value = e.response?.data?.message || "Error adding exercise to plan";
+      messageType.value = "error";
     });
 };
 
@@ -101,12 +116,60 @@ const removeExerciseFromPlan = (exercise) => {
   )
     .then(() => {
       exercises.value = exercises.value.filter(
-        (ex) => (ex.exercise_id || ex.id) !== (exercise.exercise_id || exercise.id)
+        (e) => (e.exercise_id || e.id) !== (exercise.exercise_id || exercise.id)
       );
+      message.value = "Exercise removed successfully!";
+      messageType.value = "success";
     })
     .catch((e) => {
       message.value = e.response?.data?.message || "Error removing exercise from plan";
+      messageType.value = "error";
     });
+};
+
+const startEditingExercise = (exercise) => {
+  editingExercise.value = {
+    exercise_id: exercise.exercise_id || exercise.id,
+    sets: exercise.exercisePlanExercise?.sets || exercise.sets || 3,
+    reps: exercise.exercisePlanExercise?.reps || exercise.reps || 10,
+    duration: exercise.exercisePlanExercise?.duration || exercise.duration || "",
+  };
+};
+
+const saveExerciseChanges = () => {
+  const exerciseId = editingExercise.value.exercise_id;
+  const updateData = {
+    sets: editingExercise.value.sets,
+    reps: editingExercise.value.reps,
+    duration: editingExercise.value.duration,
+  };
+
+  ExercisePlanServices.updateExercise(route.params.id, exerciseId, updateData)
+    .then(() => {
+      // Update the local exercise data
+      const exercise = exercises.value.find(
+        (e) => (e.exercise_id || e.id) === exerciseId
+      );
+      if (exercise) {
+        if (!exercise.exercisePlanExercise) {
+          exercise.exercisePlanExercise = {};
+        }
+        exercise.exercisePlanExercise.sets = editingExercise.value.sets;
+        exercise.exercisePlanExercise.reps = editingExercise.value.reps;
+        exercise.exercisePlanExercise.duration = editingExercise.value.duration;
+      }
+      message.value = "Exercise updated successfully!";
+      messageType.value = "success";
+      editingExercise.value = null;
+    })
+    .catch((e) => {
+      message.value = e.response?.data?.message || "Error updating exercise";
+      messageType.value = "error";
+    });
+};
+
+const cancelEditing = () => {
+  editingExercise.value = null;
 };
 
 const cancel = () => {
@@ -163,7 +226,15 @@ onMounted(() => {
               clearable
             ></v-select>
 
-            <v-alert v-if="message" type="error" class="mb-4">
+            <v-select
+              v-model="form.sport"
+              :items="['All', 'Baseball', 'Basketball', 'Football', 'Golf', 'Soccer', 'Swimming', 'Tennis', 'Track', 'Volleyball', 'Wrestling', 'Other']"
+              label="Sport"
+              variant="outlined"
+              class="mb-4"
+            ></v-select>
+
+            <v-alert v-if="message" :type="messageType" class="mb-4">
               {{ message }}
             </v-alert>
 
@@ -190,7 +261,7 @@ onMounted(() => {
                 v-model="selectedExercise"
                 :items="availableExercises"
                 item-title="name"
-                item-value="exercise_id"
+                return-object
                 label="Select Exercise"
                 variant="outlined"
               ></v-select>
@@ -227,46 +298,114 @@ onMounted(() => {
           <v-divider class="mb-4"></v-divider>
 
           <h3 class="mb-4">Exercises in Plan</h3>
-          <v-table>
-            <thead>
-              <tr>
-                <th class="text-left">Exercise Name</th>
-                <th class="text-left">Sets</th>
-                <th class="text-left">Reps</th>
-                <th class="text-left">Duration</th>
-                <th class="text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="exercise in exercises" :key="exercise.exercise_id || exercise.id">
-                <td>{{ exercise.name }}</td>
-                <td>
-                  {{
-                    exercise.exercisePlanExercise?.sets || exercise.sets || "-"
-                  }}
-                </td>
-                <td>
-                  {{
-                    exercise.exercisePlanExercise?.reps || exercise.reps || "-"
-                  }}
-                </td>
-                <td>
-                  {{
-                    exercise.exercisePlanExercise?.duration || exercise.duration || "-"
-                  }}
-                </td>
-                <td>
-                  <v-icon
-                    small
-                    class="mx-4"
-                    @click="removeExerciseFromPlan(exercise)"
-                  >
-                    mdi-trash-can
-                  </v-icon>
-                </td>
-              </tr>
-            </tbody>
-          </v-table>
+          
+          <div v-if="exercises.length === 0">
+            <v-alert type="info" variant="tonal">
+              No exercises in this plan yet. Add exercises above.
+            </v-alert>
+          </div>
+
+          <div v-else class="d-flex flex-column ga-3">
+            <v-card
+              v-for="exercise in exercises"
+              :key="exercise.exercise_id || exercise.id"
+              variant="outlined"
+            >
+              <v-card-text>
+                <div class="d-flex justify-space-between align-center mb-3">
+                  <h4>{{ exercise.name }}</h4>
+                  <div>
+                    <v-btn
+                      v-if="!editingExercise || editingExercise.exercise_id !== (exercise.exercise_id || exercise.id)"
+                      icon
+                      size="small"
+                      color="primary"
+                      @click="startEditingExercise(exercise)"
+                      class="mr-2"
+                    >
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="editingExercise && editingExercise.exercise_id === (exercise.exercise_id || exercise.id)"
+                      icon
+                      size="small"
+                      color="success"
+                      @click="saveExerciseChanges"
+                      class="mr-2"
+                    >
+                      <v-icon>mdi-check</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="editingExercise && editingExercise.exercise_id === (exercise.exercise_id || exercise.id)"
+                      icon
+                      size="small"
+                      color="warning"
+                      @click="cancelEditing"
+                      class="mr-2"
+                    >
+                      <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-btn
+                      icon
+                      size="small"
+                      color="error"
+                      @click="removeExerciseFromPlan(exercise)"
+                    >
+                      <v-icon>mdi-trash-can</v-icon>
+                    </v-btn>
+                  </div>
+                </div>
+
+                <!-- View Mode -->
+                <div v-if="!editingExercise || editingExercise.exercise_id !== (exercise.exercise_id || exercise.id)">
+                  <div class="d-flex flex-wrap ga-2">
+                    <v-chip size="small" color="primary" variant="outlined">
+                      Sets: {{ exercise.exercisePlanExercise?.sets || exercise.sets || "-" }}
+                    </v-chip>
+                    <v-chip size="small" color="primary" variant="outlined">
+                      Reps: {{ exercise.exercisePlanExercise?.reps || exercise.reps || "-" }}
+                    </v-chip>
+                    <v-chip size="small" color="info" variant="outlined">
+                      Duration: {{ exercise.exercisePlanExercise?.duration || exercise.duration || "No time limit" }}
+                    </v-chip>
+                  </div>
+                </div>
+
+                <!-- Edit Mode -->
+                <div v-else>
+                  <v-row>
+                    <v-col cols="12" sm="4">
+                      <v-text-field
+                        v-model.number="editingExercise.sets"
+                        type="number"
+                        label="Sets"
+                        variant="outlined"
+                        density="compact"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="4">
+                      <v-text-field
+                        v-model.number="editingExercise.reps"
+                        type="number"
+                        label="Reps"
+                        variant="outlined"
+                        density="compact"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="4">
+                      <v-text-field
+                        v-model="editingExercise.duration"
+                        label="Duration"
+                        placeholder="e.g., 30s"
+                        variant="outlined"
+                        density="compact"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </div>
+              </v-card-text>
+            </v-card>
+          </div>
         </v-card-text>
       </v-card>
     </v-container>

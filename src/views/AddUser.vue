@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import UserServices from "../services/userServices";
 
 const router = useRouter();
-const form = ref({ fName: "", lName: "", email: "", role: "athlete" });
+const form = ref({ fName: "", lName: "", email: "", role: "athlete", sport: null });
 const saving = ref(false);
 
 const save = async () => {
@@ -37,6 +37,13 @@ const cancel = () => router.push({ name: "users" });
         :items="['athlete', 'coach', 'admin']"
         label="Role"
         required
+      />
+      <v-select
+        v-if="form.role === 'athlete'"
+        v-model="form.sport"
+        :items="['baseball', 'basketball', 'football', 'golf', 'soccer', 'swimming', 'tennis', 'track', 'volleyball', 'wrestling', 'other']"
+        label="Sport (Optional)"
+        clearable
       />
 
       <v-btn type="submit" color="primary" :loading="saving" class="mr-2">

@@ -59,6 +59,7 @@ onMounted(() => {
         <v-btn class="mx-2" :to="{ name: 'workout' }"> Today's Workout </v-btn>
         <v-btn class="mx-2" :to="{ name: 'users' }"> Users </v-btn>
         <v-btn class="mx-2" :to="{ name: 'exercises' }"> Exercises </v-btn>
+  <v-btn class="mx-2" :to="{ name: 'goals' }"> Goals </v-btn>
         <v-btn class="mx-2" :to="{ name: 'exercisePlans' }"> Exercise Plans </v-btn>
       </div>
       <v-menu bottom min-width="200px" rounded offset-y v-if="user">

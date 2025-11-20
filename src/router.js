@@ -11,6 +11,9 @@ import TodaysWorkout from "./views/TodaysWorkout.vue";
 import UsersList from "./views/UsersList.vue";
 import AddUser from "./views/AddUser.vue";
 import EditUser from "./views/EditUser.vue";
+import GoalsList from "./views/GoalsList.vue";
+import AddGoal from "./views/AddGoal.vue";
+import EditGoal from "./views/EditGoal.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -72,6 +75,22 @@ const router = createRouter({
       path: "/exercise-plans/edit/:id",
       name: "editExercisePlan",
       component: EditExercisePlan,
+      props: true,
+    },
+    {
+      path: "/goals",
+      name: "goals",
+      component: GoalsList,
+    },
+    {
+      path: "/goals/add",
+      name: "addGoal",
+      component: AddGoal,
+    },
+    {
+      path: "/goals/edit/:id",
+      name: "editGoal",
+      component: EditGoal,
       props: true,
     },
   ],

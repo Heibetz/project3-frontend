@@ -3,9 +3,13 @@ import Utils from "../config/utils.js";
 import AuthServices from "./authServices.js";
 import Router from "../router.js";
 
+// NOTE: backend runs on port 3125 in this project (server.js). Ensure dev API calls
+// target that port so requests reach the Node backend instead of the default HTTP
+// server on port 80. If your backend uses a different port, update here or set
+// an environment variable.
 var baseurl = "";
 if (import.meta.env.DEV) {
-  baseurl = "http://localhost/tracker-t5/";
+  baseurl = "http://localhost:/tracker-t5/";
 } else {
   baseurl = "/tracker-t5/";
 }

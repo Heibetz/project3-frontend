@@ -35,8 +35,21 @@ const stats = computed(() => ({
 const loadDashboardData = async () => {
   loading.value = true;
   try {
-    const plansRes = await ExercisePlanServices.getAll();
-    exercisePlans.value = plansRes.data || [];
+    const params = {};
+    // Add sport filter to get coach-assigned plans matching athlete's sport
+    if (user.value.sport) {
+      params.sport = user.value.sport;
+    }
+    
+    const plansRes = await ExercisePlanServices.getAll(params);
+    // Filter to include: plans created by athlete OR standard plans OR plans matching their sport
+    const allPlans = plansRes.data || [];
+    exercisePlans.value = allPlans.filter(plan => {
+      // Include if: created by athlete, is standard, or matches their sport
+      return plan.created_by === user.value.userId || 
+             plan.is_standard === true || 
+             (user.value.sport && (plan.sport === user.value.sport || plan.sport === "All"));
+    });
   } catch (error) {
     console.error("Error loading dashboard data:", error);
   } finally {

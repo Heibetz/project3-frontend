@@ -48,19 +48,32 @@ const allExercisesToday = computed(() => {
 
 const retrieveWorkoutPlans = () => {
   loading.value = true;
-  const params = { 
-    created_by: user.userId
-  };
+  const params = {};
   
-  // Add sport filter if user has a sport selected
+  // For athletes, show plans that:
+  // 1. They created themselves, OR
+  // 2. Are standard plans, OR  
+  // 3. Match their sport (coach-assigned plans)
+  // We'll filter by sport to get coach-assigned plans, and the backend will also return standard plans
+  // We'll also need to include plans created by the athlete
+  
+  // Add sport filter to get coach-assigned plans matching athlete's sport
   if (user.sport) {
     params.sport = user.sport;
   }
   
   ExercisePlanServices.getAll(params)
     .then((response) => {
-      exercisePlans.value = response.data;
-      console.log("All exercise plans:", response.data);
+      // Filter to include: plans created by athlete OR standard plans OR plans matching their sport
+      const allPlans = response.data || [];
+      exercisePlans.value = allPlans.filter(plan => {
+        // Include if: created by athlete, is standard, or matches their sport (already filtered by backend)
+        return plan.created_by === user.userId || 
+               plan.is_standard === true || 
+               (user.sport && (plan.sport === user.sport || plan.sport === "All"));
+      });
+      
+      console.log("All exercise plans:", exercisePlans.value);
       console.log("Today is:", today.value);
       console.log("Today's plans:", todaysPlans.value);
       

@@ -108,22 +108,22 @@ onMounted(() => {
         <v-text-field
           v-model.number="result.resultMeasure1"
           type="number"
-          label="Measure 1"
-          hint="Enter first measurement (e.g., weight, reps, etc.)"
+          label="Sets"
+          hint="Enter sets completed"
         ></v-text-field>
 
         <v-text-field
           v-model.number="result.resultMeasure2"
           type="number"
-          label="Measure 2"
-          hint="Enter second measurement"
+          label="Reps"
+          hint="Enter reps completed"
         ></v-text-field>
 
         <v-text-field
           v-model.number="result.resultMeasure3"
           type="number"
-          label="Measure 3"
-          hint="Enter third measurement"
+          label="Additional Measure"
+          hint="Enter additional measurement (e.g., duration, weight, etc.)"
         ></v-text-field>
 
         <v-textarea

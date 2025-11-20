@@ -27,14 +27,10 @@ const fetchExercises = () => {
     });
 };
 
-// Fetch results with filters
+// Fetch results
 const retrieveResults = () => {
   loading.value = true;
   const params = { user_id: user.userId };
-  
-  if (selectedExercise.value) {
-    params.exercise_id = selectedExercise.value;
-  }
 
   ResultServices.getAll(params)
     .then((response) => {
@@ -50,6 +46,13 @@ const retrieveResults = () => {
 // Computed property for filtered results
 const filteredResults = computed(() => {
   let filtered = [...results.value];
+
+  // Apply exercise filter (by exercise_id if selected)
+  if (selectedExercise.value) {
+    filtered = filtered.filter((result) => {
+      return result.exercise_id === selectedExercise.value;
+    });
+  }
 
   // Apply date filter
   if (dateFilter.value !== "all") {
@@ -151,7 +154,7 @@ const formatDate = (dateString) => {
 
 // Handle filter changes
 const onExerciseFilterChange = () => {
-  retrieveResults();
+  // Exercise filter is applied via computed property, no need to refetch
 };
 
 const onDateFilterChange = () => {
@@ -162,7 +165,6 @@ const onDateFilterChange = () => {
 const clearFilters = () => {
   selectedExercise.value = null;
   dateFilter.value = "all";
-  retrieveResults();
 };
 
 // Edit result
@@ -245,15 +247,18 @@ onMounted(() => {
         <v-card-text>
           <v-row>
             <v-col cols="12" md="4">
-              <v-select
+              <v-autocomplete
                 v-model="selectedExercise"
                 :items="exercises"
                 item-title="name"
                 item-value="exercise_id"
                 label="Filter by Exercise"
+                variant="outlined"
                 clearable
+                prepend-inner-icon="mdi-magnify"
+                placeholder="Search or select exercise..."
                 @update:model-value="onExerciseFilterChange"
-              ></v-select>
+              ></v-autocomplete>
             </v-col>
             <v-col cols="12" md="4">
               <v-select

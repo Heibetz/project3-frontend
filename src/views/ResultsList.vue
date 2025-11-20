@@ -11,6 +11,9 @@ const exercises = ref([]);
 const user = Utils.getStore("user");
 const message = ref("View and filter your training results");
 const loading = ref(false);
+const deleteDialog = ref(false);
+const resultToDelete = ref(null);
+const deleting = ref(false);
 
 // Filter state
 const selectedExercise = ref(null);
@@ -172,6 +175,35 @@ const editResult = (result) => {
   router.push({ name: "editResult", params: { id: result.id } });
 };
 
+// Delete result
+const confirmDelete = (result) => {
+  resultToDelete.value = result;
+  deleteDialog.value = true;
+};
+
+const deleteResult = async () => {
+  if (!resultToDelete.value) return;
+  
+  deleting.value = true;
+  try {
+    await ResultServices.delete(resultToDelete.value.id);
+    message.value = "Result deleted successfully";
+    // Refresh results list
+    retrieveResults();
+    deleteDialog.value = false;
+    resultToDelete.value = null;
+  } catch (e) {
+    message.value = e.response?.data?.message || "Error deleting result";
+  } finally {
+    deleting.value = false;
+  }
+};
+
+const cancelDelete = () => {
+  deleteDialog.value = false;
+  resultToDelete.value = null;
+};
+
 onMounted(() => {
   fetchExercises();
   retrieveResults();
@@ -325,14 +357,62 @@ onMounted(() => {
               <td>{{ result.resultMeasure3 ?? "-" }}</td>
               <td>{{ result.notes || "-" }}</td>
               <td>
-                <v-icon small class="mx-2" @click="editResult(result)" title="Edit Result">
+                <v-icon 
+                  small 
+                  class="mx-2" 
+                  @click="editResult(result)" 
+                  title="Edit Result"
+                  color="primary"
+                >
                   mdi-pencil
+                </v-icon>
+                <v-icon 
+                  small 
+                  class="mx-2" 
+                  @click="confirmDelete(result)" 
+                  title="Delete Result"
+                  color="error"
+                >
+                  mdi-delete
                 </v-icon>
               </td>
             </tr>
           </tbody>
         </v-table>
       </v-card>
+
+      <!-- Delete Confirmation Dialog -->
+      <v-dialog v-model="deleteDialog" max-width="500">
+        <v-card>
+          <v-card-title class="text-h5">Delete Result</v-card-title>
+          <v-card-text>
+            Are you sure you want to delete this result? This action cannot be undone.
+            <div v-if="resultToDelete" class="mt-3">
+              <strong>Exercise:</strong> {{ exercises.find(e => e.exercise_id === resultToDelete.exercise_id)?.name || `Exercise ${resultToDelete.exercise_id}` }}<br>
+              <strong>Date:</strong> {{ formatDate(resultToDelete.date) }}
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="grey"
+              variant="text"
+              @click="cancelDelete"
+              :disabled="deleting"
+            >
+              Cancel
+            </v-btn>
+            <v-btn
+              color="error"
+              variant="elevated"
+              @click="deleteResult"
+              :loading="deleting"
+            >
+              Delete
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-container>
   </div>
 </template>

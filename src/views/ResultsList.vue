@@ -1,15 +1,26 @@
 <script setup>
 import ResultServices from "../services/resultServices";
 import ExerciseServices from "../services/exerciseServices";
+import UserServices from "../services/userServices";
 import Utils from "../config/utils.js";
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
+const props = defineProps({
+  id: {
+    type: [String, Number],
+    default: null,
+  },
+});
+
 const results = ref([]);
 const exercises = ref([]);
+const athleteInfo = ref(null);
 const user = Utils.getStore("user");
-const message = ref("View and filter your training results");
+const athleteId = computed(() => props.id ? parseInt(props.id) : user.userId);
+const isCoachView = computed(() => !!props.id && user.role === 'coach');
+const message = ref(isCoachView.value ? "View and filter athlete's training results" : "View and filter your training results");
 const loading = ref(false);
 const deleteDialog = ref(false);
 const resultToDelete = ref(null);
@@ -19,9 +30,23 @@ const deleting = ref(false);
 const selectedExercise = ref(null);
 const dateFilter = ref("all"); // "all", "week", "month", "year"
 
+// Fetch athlete information (when viewing as coach)
+const fetchAthleteInfo = async () => {
+  if (isCoachView.value && props.id) {
+    try {
+      const response = await UserServices.get(props.id);
+      athleteInfo.value = response.data;
+    } catch (e) {
+      console.error("Error loading athlete info:", e);
+    }
+  }
+};
+
 // Fetch all exercises for the filter dropdown
 const fetchExercises = () => {
-  ExerciseServices.getAll({ created_by: user.userId })
+  // Coaches can see all exercises, athletes see their own
+  const params = isCoachView.value ? {} : { created_by: user.userId };
+  ExerciseServices.getAll(params)
     .then((response) => {
       exercises.value = response.data;
     })
@@ -33,7 +58,7 @@ const fetchExercises = () => {
 // Fetch results
 const retrieveResults = () => {
   loading.value = true;
-  const params = { user_id: user.userId };
+  const params = { user_id: athleteId.value };
 
   ResultServices.getAll(params)
     .then((response) => {
@@ -205,6 +230,7 @@ const cancelDelete = () => {
 };
 
 onMounted(() => {
+  fetchAthleteInfo();
   fetchExercises();
   retrieveResults();
 });
@@ -214,8 +240,17 @@ onMounted(() => {
   <div>
     <v-container>
       <v-toolbar>
-        <v-toolbar-title>My Results</v-toolbar-title>
+        <v-toolbar-title>
+          <span v-if="isCoachView && athleteInfo">
+            {{ athleteInfo.fName }} {{ athleteInfo.lName }}'s Results
+          </span>
+          <span v-else>My Results</span>
+        </v-toolbar-title>
         <v-spacer></v-spacer>
+        <v-btn v-if="isCoachView" color="primary" @click="router.push({ name: 'athletes' })">
+          <v-icon left>mdi-arrow-left</v-icon>
+          Back to Athletes
+        </v-btn>
       </v-toolbar>
 
       <!-- Statistics Cards -->
@@ -356,7 +391,7 @@ onMounted(() => {
               <td>{{ result.resultMeasure2 ?? "-" }}</td>
               <td>{{ result.resultMeasure3 ?? "-" }}</td>
               <td>{{ result.notes || "-" }}</td>
-              <td>
+              <td v-if="!isCoachView">
                 <v-icon 
                   small 
                   class="mx-2" 
@@ -375,6 +410,9 @@ onMounted(() => {
                 >
                   mdi-delete
                 </v-icon>
+              </td>
+              <td v-else class="text-grey">
+                View Only
               </td>
             </tr>
           </tbody>

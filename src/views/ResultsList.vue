@@ -78,6 +78,66 @@ const filteredResults = computed(() => {
   return filtered;
 });
 
+// Statistics computed properties
+const stats = computed(() => {
+  const allResults = filteredResults.value;
+  
+  // Get unique workout dates
+  const uniqueDates = new Set();
+  allResults.forEach(r => {
+    if (r.date) {
+      const dateStr = new Date(r.date).toDateString();
+      uniqueDates.add(dateStr);
+    }
+  });
+
+  // Calculate max values across all measures
+  let maxMeasure1 = null;
+  let maxMeasure2 = null;
+  let maxMeasure3 = null;
+  
+  allResults.forEach(r => {
+    if (r.resultMeasure1 !== null && r.resultMeasure1 !== undefined) {
+      if (maxMeasure1 === null || r.resultMeasure1 > maxMeasure1) {
+        maxMeasure1 = r.resultMeasure1;
+      }
+    }
+    if (r.resultMeasure2 !== null && r.resultMeasure2 !== undefined) {
+      if (maxMeasure2 === null || r.resultMeasure2 > maxMeasure2) {
+        maxMeasure2 = r.resultMeasure2;
+      }
+    }
+    if (r.resultMeasure3 !== null && r.resultMeasure3 !== undefined) {
+      if (maxMeasure3 === null || r.resultMeasure3 > maxMeasure3) {
+        maxMeasure3 = r.resultMeasure3;
+      }
+    }
+  });
+
+  // Get recent workouts (last 5 unique dates)
+  const sortedDates = Array.from(uniqueDates).sort((a, b) => {
+    return new Date(b) - new Date(a);
+  });
+  const recentWorkoutDates = sortedDates.slice(0, 5);
+
+  return {
+    totalWorkouts: uniqueDates.size,
+    totalResults: allResults.length,
+    maxMeasure1,
+    maxMeasure2,
+    maxMeasure3,
+    recentWorkoutDates,
+  };
+});
+
+// Get results for a specific date
+const getResultsForDate = (dateString) => {
+  return filteredResults.value.filter(r => {
+    if (!r.date) return false;
+    return new Date(r.date).toDateString() === dateString;
+  });
+};
+
 // Format date for display
 const formatDate = (dateString) => {
   if (!dateString) return "N/A";
@@ -123,6 +183,62 @@ onMounted(() => {
         <v-toolbar-title>My Results</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
+
+      <!-- Statistics Cards -->
+      <v-row class="mt-4">
+        <v-col cols="12" md="3">
+          <v-card variant="tonal" color="primary">
+            <v-card-text class="text-center">
+              <div class="text-h4 font-weight-bold">{{ stats.totalWorkouts }}</div>
+              <div class="text-subtitle-2 mt-1">Total Workouts</div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-card variant="tonal" color="secondary">
+            <v-card-text class="text-center">
+              <div class="text-h4 font-weight-bold">{{ stats.totalResults }}</div>
+              <div class="text-subtitle-2 mt-1">Total Results</div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-card variant="tonal" color="success">
+            <v-card-text class="text-center">
+              <div class="text-h4 font-weight-bold">
+                {{ stats.maxMeasure1 !== null ? stats.maxMeasure1 : '-' }}
+              </div>
+              <div class="text-subtitle-2 mt-1">Max Primary Metric</div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-card variant="tonal" color="warning">
+            <v-card-text class="text-center">
+              <div class="text-h4 font-weight-bold">
+                {{ stats.maxMeasure2 !== null ? stats.maxMeasure2 : '-' }}
+              </div>
+              <div class="text-subtitle-2 mt-1">Max Secondary Metric</div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <!-- Recent Workouts -->
+      <v-card class="mt-4" v-if="stats.recentWorkoutDates.length > 0">
+        <v-card-title>Recent Workouts</v-card-title>
+        <v-card-text>
+          <v-list>
+            <v-list-item
+              v-for="(dateStr, index) in stats.recentWorkoutDates"
+              :key="index"
+              :title="formatDate(new Date(dateStr).toISOString())"
+              :subtitle="`${getResultsForDate(dateStr).length} exercise(s)`"
+            >
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+      </v-card>
 
       <v-card class="mt-4">
         <v-card-title>Filter Results</v-card-title>
@@ -179,8 +295,8 @@ onMounted(() => {
             <tr>
               <th class="text-left">Date</th>
               <th class="text-left">Exercise</th>
-              <th class="text-left">Measure 1</th>
-              <th class="text-left">Measure 2</th>
+              <th class="text-left">Primary Metric</th>
+              <th class="text-left">Secondary Metric</th>
               <th class="text-left">Measure 3</th>
               <th class="text-left">Notes</th>
               <th class="text-left">Actions</th>

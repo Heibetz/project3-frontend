@@ -16,6 +16,7 @@ import AthleteDashboard from "./views/AthleteDashboard.vue";
 import CoachDashboard from "./views/CoachDashboard.vue";
 import AdminDashboard from "./views/AdminDashboard.vue";
 import UserSettings from "./views/UserSettings.vue";
+//test
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

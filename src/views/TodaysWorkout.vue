@@ -1,12 +1,18 @@
 <script setup>
 import ExercisePlanServices from "../services/exercisePlanServices";
+import ResultServices from "../services/resultServices";
 import Utils from "../config/utils.js";
 import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const exercisePlans = ref([]);
 const user = Utils.getStore("user");
 const message = ref("Loading today's workout...");
 const loading = ref(true);
+const workoutStarted = ref(false);
+const workoutResults = ref({});
+const saving = ref(false);
 
 const today = computed(() => {
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -87,6 +93,57 @@ const retrieveWorkoutPlans = () => {
       message.value = e.response?.data?.message || "Error loading workout plans";
       loading.value = false;
     });
+};
+
+const startWorkout = () => {
+  workoutStarted.value = true;
+  // Initialize workout results for each exercise
+  allExercisesToday.value.forEach((exercise) => {
+    workoutResults.value[exercise.exercise_id] = {
+      resultMeasure1: exercise.exercisePlanExercise?.sets || null,
+      resultMeasure2: exercise.exercisePlanExercise?.reps || null,
+      resultMeasure3: exercise.exercisePlanExercise?.duration || null,
+      notes: "",
+    };
+  });
+};
+
+const finishWorkout = async () => {
+  saving.value = true;
+  const today = new Date().toISOString().split("T")[0];
+  
+  try {
+    const savePromises = allExercisesToday.value.map((exercise) => {
+      const resultData = workoutResults.value[exercise.exercise_id];
+      if (!resultData) return Promise.resolve();
+      
+      return ResultServices.create({
+        user_id: user.userId,
+        exercise_id: exercise.exercise_id,
+        date: today,
+        resultMeasure1: resultData.resultMeasure1 ? parseInt(resultData.resultMeasure1) : null,
+        resultMeasure2: resultData.resultMeasure2 ? parseInt(resultData.resultMeasure2) : null,
+        resultMeasure3: resultData.resultMeasure3 ? parseInt(resultData.resultMeasure3) : null,
+        notes: resultData.notes || null,
+      });
+    });
+
+    await Promise.all(savePromises);
+    message.value = "Workout completed! Results saved successfully.";
+    
+    // Redirect to results page after a short delay
+    setTimeout(() => {
+      router.push({ name: "results" });
+    }, 1500);
+  } catch (e) {
+    message.value = e.response?.data?.message || "Error saving workout results";
+    saving.value = false;
+  }
+};
+
+const cancelWorkout = () => {
+  workoutStarted.value = false;
+  workoutResults.value = {};
 };
 
 onMounted(() => {
@@ -204,13 +261,14 @@ onMounted(() => {
                   </div>
 
                   <div class="workout-details">
-                    <v-row>
+                    <!-- Planned workout details (shown when workout not started) -->
+                    <v-row v-if="!workoutStarted">
                       <v-col cols="12" sm="4">
                         <v-card variant="tonal" color="primary" class="text-center pa-3">
                           <div class="text-h4 font-weight-bold">
                             {{ exercise.exercisePlanExercise?.sets || '-' }}
                           </div>
-                          <div class="text-subtitle-2">SETS</div>
+                          <div class="text-subtitle-2">SETS (Planned)</div>
                         </v-card>
                       </v-col>
                       <v-col cols="12" sm="4">
@@ -218,7 +276,7 @@ onMounted(() => {
                           <div class="text-h4 font-weight-bold">
                             {{ exercise.exercisePlanExercise?.reps || '-' }}
                           </div>
-                          <div class="text-subtitle-2">REPS</div>
+                          <div class="text-subtitle-2">REPS (Planned)</div>
                         </v-card>
                       </v-col>
                       <v-col cols="12" sm="4">
@@ -226,8 +284,51 @@ onMounted(() => {
                           <div class="text-h6 font-weight-bold">
                             {{ exercise.exercisePlanExercise?.duration || 'Rest as needed' }}
                           </div>
-                          <div class="text-subtitle-2">DURATION</div>
+                          <div class="text-subtitle-2">DURATION (Planned)</div>
                         </v-card>
+                      </v-col>
+                    </v-row>
+                    
+                    <!-- Result input fields (shown when workout started) -->
+                    <v-row v-else>
+                      <v-col cols="12" sm="4">
+                        <v-text-field
+                          v-model.number="workoutResults[exercise.exercise_id].resultMeasure1"
+                          type="number"
+                          label="Sets"
+                          variant="outlined"
+                          :placeholder="exercise.exercisePlanExercise?.sets || ''"
+                          hint="Enter sets completed"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <v-text-field
+                          v-model.number="workoutResults[exercise.exercise_id].resultMeasure2"
+                          type="number"
+                          label="Reps"
+                          variant="outlined"
+                          :placeholder="exercise.exercisePlanExercise?.reps || ''"
+                          hint="Enter reps completed"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="4">
+                        <v-text-field
+                          v-model.number="workoutResults[exercise.exercise_id].resultMeasure3"
+                          type="number"
+                          label="Measure 3 (Duration)"
+                          variant="outlined"
+                          :placeholder="exercise.exercisePlanExercise?.duration || ''"
+                          hint="Enter duration in seconds"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-textarea
+                          v-model="workoutResults[exercise.exercise_id].notes"
+                          label="Notes (optional)"
+                          variant="outlined"
+                          rows="2"
+                          :counter="500"
+                        ></v-textarea>
                       </v-col>
                     </v-row>
                   </div>
@@ -242,15 +343,47 @@ onMounted(() => {
               </v-card>
             </div>
 
-            <!-- Workout Summary -->
-            <v-card variant="tonal" color="success" class="mt-4">
+            <!-- Workout Actions -->
+            <v-card variant="tonal" :color="workoutStarted ? 'warning' : 'success'" class="mt-4">
               <v-card-text class="text-center">
-                <h3>Workout Summary</h3>
-                <div class="mt-2">
-                  <strong>{{ allExercisesToday.length }} exercises</strong> scheduled for {{ today }}
+                <div v-if="!workoutStarted">
+                  <h3>Ready to Start?</h3>
+                  <div class="mt-2">
+                    <strong>{{ allExercisesToday.length }} exercises</strong> scheduled for {{ today }}
+                  </div>
+                  <div class="mt-4">
+                    <v-btn
+                      color="primary"
+                      size="large"
+                      @click="startWorkout"
+                    >
+                      Start Workout
+                    </v-btn>
+                  </div>
                 </div>
-                <div class="mt-2 text-body-2">
-                  Stay consistent and crush your goals! 💪
+                <div v-else>
+                  <h3>Workout in Progress</h3>
+                  <div class="mt-2 text-body-2">
+                    Enter your results above, then click Finish Workout when done.
+                  </div>
+                  <div class="mt-4 d-flex justify-center ga-2">
+                    <v-btn
+                      color="success"
+                      size="large"
+                      :loading="saving"
+                      @click="finishWorkout"
+                    >
+                      Finish Workout
+                    </v-btn>
+                    <v-btn
+                      color="error"
+                      size="large"
+                      variant="outlined"
+                      @click="cancelWorkout"
+                    >
+                      Cancel
+                    </v-btn>
+                  </div>
                 </div>
               </v-card-text>
             </v-card>

@@ -12,6 +12,8 @@ import UsersList from "./views/UsersList.vue";
 import AthletesList from "./views/AthletesList.vue";
 import AddUser from "./views/AddUser.vue";
 import EditUser from "./views/EditUser.vue";
+import ResultsList from "./views/ResultsList.vue";
+import EditResult from "./views/EditResult.vue";
 import AthleteDashboard from "./views/AthleteDashboard.vue";
 import CoachDashboard from "./views/CoachDashboard.vue";
 import AdminDashboard from "./views/AdminDashboard.vue";
@@ -107,6 +109,17 @@ const router = createRouter({
       path: "/exercise-plans/edit/:id",
       name: "editExercisePlan",
       component: EditExercisePlan,
+      props: true,
+    },
+    {
+      path: "/results",
+      name: "results",
+      component: ResultsList,
+    },
+    {
+      path: "/results/edit/:id",
+      name: "editResult",
+      component: EditResult,
       props: true,
     },
   ],

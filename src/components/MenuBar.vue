@@ -1,11 +1,12 @@
 <script setup>
 import ocLogo from "/oc-logo-white.png";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import Utils from "../config/utils";
 import AuthServices from "../services/authServices";
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 const user = ref(null);
 const title = ref("Exercises");
 const initials = ref("");
@@ -40,6 +41,11 @@ onMounted(() => {
   logoURL.value = ocLogo;
   resetMenu();
 });
+
+// Watch for route changes to refresh menu
+watch(() => route.path, () => {
+  resetMenu();
+});
 </script>
 
 <template>
@@ -52,6 +58,7 @@ onMounted(() => {
           height="50"
           width="50"
           cover
+          @error="logoURL = ''"
         ></v-img>
       </router-link>
       <v-toolbar-title class="title">
@@ -64,9 +71,10 @@ onMounted(() => {
           Dashboard
         </v-btn>
 
-        <!-- Athlete: show Today's Workout only -->
+        <!-- Athlete: show Today's Workout and Results -->
         <template v-if="user.role === 'athlete'">
           <v-btn class="mx-2" :to="{ name: 'workout' }"> Today's Workout </v-btn>
+          <v-btn class="mx-2" :to="{ name: 'results' }"> Results </v-btn>
           <v-btn class="mx-2" :to="{ name: 'editUser', params: { id: user.userId } }"> Edit Profile </v-btn>
           <v-btn class="mx-2" :to="{ name: 'users' }"> Users </v-btn>
         </template>

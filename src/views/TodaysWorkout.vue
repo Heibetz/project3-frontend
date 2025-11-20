@@ -295,7 +295,7 @@ onMounted(() => {
                         <v-text-field
                           v-model.number="workoutResults[exercise.exercise_id].resultMeasure1"
                           type="number"
-                          label="Primary Metric (Sets)"
+                          label="Sets"
                           variant="outlined"
                           :placeholder="exercise.exercisePlanExercise?.sets || ''"
                           hint="Enter sets completed"
@@ -305,7 +305,7 @@ onMounted(() => {
                         <v-text-field
                           v-model.number="workoutResults[exercise.exercise_id].resultMeasure2"
                           type="number"
-                          label="Secondary Metric (Reps)"
+                          label="Reps"
                           variant="outlined"
                           :placeholder="exercise.exercisePlanExercise?.reps || ''"
                           hint="Enter reps completed"

@@ -208,7 +208,7 @@ onMounted(() => {
               <div class="text-h4 font-weight-bold">
                 {{ stats.maxMeasure1 !== null ? stats.maxMeasure1 : '-' }}
               </div>
-              <div class="text-subtitle-2 mt-1">Max Primary Metric</div>
+              <div class="text-subtitle-2 mt-1">Max Sets</div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -218,7 +218,7 @@ onMounted(() => {
               <div class="text-h4 font-weight-bold">
                 {{ stats.maxMeasure2 !== null ? stats.maxMeasure2 : '-' }}
               </div>
-              <div class="text-subtitle-2 mt-1">Max Secondary Metric</div>
+              <div class="text-subtitle-2 mt-1">Max Reps</div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -295,9 +295,9 @@ onMounted(() => {
             <tr>
               <th class="text-left">Date</th>
               <th class="text-left">Exercise</th>
-              <th class="text-left">Primary Metric</th>
-              <th class="text-left">Secondary Metric</th>
-              <th class="text-left">Measure 3</th>
+              <th class="text-left">Sets</th>
+              <th class="text-left">Reps</th>
+              <th class="text-left">Additional Metric</th>
               <th class="text-left">Notes</th>
               <th class="text-left">Actions</th>
             </tr>

@@ -18,6 +18,7 @@ import AthleteDashboard from "./views/AthleteDashboard.vue";
 import CoachDashboard from "./views/CoachDashboard.vue";
 import AdminDashboard from "./views/AdminDashboard.vue";
 import UserSettings from "./views/UserSettings.vue";
+import Goals from "./views/Goals.vue";
 //test
 
 const router = createRouter({
@@ -28,6 +29,11 @@ const router = createRouter({
       alias: "/login",
       name: "login",
       component: Login,
+    },
+    {
+      path: "/goals",
+      name: "goals",
+      component: Goals,
     },
     {
       path: "/dashboard/athlete",

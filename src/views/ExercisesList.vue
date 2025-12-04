@@ -28,7 +28,7 @@ const deleteExercise = (exercise) => {
 };
 
 const retrieveExercises = () => {
-  ExerciseServices.getAll({ created_by: user.userId })
+  ExerciseServices.getAll()
     .then((response) => {
       exercises.value = response.data;
     })

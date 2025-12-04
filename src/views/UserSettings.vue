@@ -63,7 +63,7 @@ onMounted(() => {
           <div class="mb-4">
             <h3 class="mb-2">{{ user.fName }} {{ user.lName }}</h3>
             <p class="text-caption">{{ user.email }}</p>
-            <v-chip size="small" :color="roles.find(r => r.value === user.role)?.color || 'primary'" class="mt-2">{{ user.role }}</v-chip>
+            <v-chip size="small" color="primary" class="mt-2">{{ user.role }}</v-chip>
           </div>
 
           <v-divider class="my-4"></v-divider>

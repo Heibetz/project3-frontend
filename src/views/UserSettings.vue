@@ -26,9 +26,9 @@ const sports = [
 ];
 
 const roles = [
-  { value: "athlete", label: "Athlete", icon: "mdi-run", color: "blue" },
-  { value: "coach", label: "Coach", icon: "mdi-whistle", color: "green" },
-  { value: "admin", label: "Admin", icon: "mdi-shield-account", color: "red" },
+  { value: "athlete", label: "athlete", color: "blue" },
+  { value: "coach", label: "coach", color: "green" },
+  { value: "admin", label: "admin", color: "red" },
 ];
 
 const currentRoleInfo = computed(() => {

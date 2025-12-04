@@ -201,38 +201,7 @@ onMounted(() => {
         </v-card>
       </v-col>
     </v-row>
-
-    <!-- Quick Links -->
-    <v-row v-if="!loading" class="mt-4">
-      <v-col cols="12">
-        <v-card elevation="2">
-          <v-card-title>Quick Links</v-card-title>
-          <v-card-text>
-            <v-row>
-              <v-col cols="12" sm="6" md="4">
-                <v-btn block color="blue" size="large" @click="router.push({ name: 'workout' })">
-                  <v-icon left>mdi-play-circle</v-icon>
-                  Today's Workout
-                </v-btn>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-btn block color="green" size="large" @click="router.push({ name: 'exercisePlans' })">
-                  <v-icon left>mdi-clipboard-text-multiple</v-icon>
-                  All Plans
-                </v-btn>
-              </v-col>
-              <v-col cols="12" sm="6" md="4">
-                <v-btn block color="orange" size="large" @click="router.push({ name: 'editUser', params: { id: user?.userId } })">
-                  <v-icon left>mdi-account-edit</v-icon>
-                  Edit Profile
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+  </v-container>  
 </template>
 
 <style scoped>

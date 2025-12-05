@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import GoalServices from "../services/goalServices";
 import UserServices from "../services/userServices";
+import ExerciseServices from "../services/exerciseServices";
 
 const route = useRoute();
 const router = useRouter();
@@ -10,6 +11,7 @@ const userId = Number(route.params.id);
 
 const user = ref(null);
 const goals = ref([]);
+const exerciseNames = ref({});
 const loading = ref(false);
 const error = ref("");
 
@@ -24,6 +26,14 @@ const fetchData = async () => {
 		// fetch all goals and filter by user_id
 		const gResp = await GoalServices.getAll();
 		goals.value = (gResp.data || []).filter(g => g.user_id === userId);
+
+		// fetch exercises to map id -> name
+		const eResp = await ExerciseServices.getAll();
+		const names = {};
+		(eResp.data || []).forEach(ex => {
+			names[ex.exercise_id] = ex.name;
+		});
+		exerciseNames.value = names;
 	} catch (e) {
 		console.log(e);
 		error.value = e?.response?.data?.message || e.message || "Failed to load goals";
@@ -35,6 +45,7 @@ const fetchData = async () => {
 onMounted(fetchData);
 
 const backToAthletes = () => router.push({ name: "athletes" });
+const getExerciseName = (exerciseId) => exerciseNames.value[exerciseId] ?? `Exercise #${exerciseId}`;
 </script>
 
 <template>
@@ -63,16 +74,14 @@ const backToAthletes = () => router.push({ name: "athletes" });
 			<v-table v-else>
 				<thead>
 					<tr>
-						<th>ID</th>
-						<th>Exercise ID</th>
+						<th>Exercise</th>
 						<th>Current Weight</th>
 						<th>Goal Weight</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="goal in goals" :key="goal.id">
-						<td>{{ goal.id }}</td>
-						<td>{{ goal.exercise_id }}</td>
+						<td>{{ getExerciseName(goal.exercise_id) }}</td>
 						<td>{{ goal.currentWeight ?? '-' }}</td>
 						<td>{{ goal.goalWeight ?? '-' }}</td>
 					</tr>

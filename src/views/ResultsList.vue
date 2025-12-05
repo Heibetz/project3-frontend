@@ -76,9 +76,9 @@ const filteredResults = computed(() => {
   let filtered = [...results.value];
 
   // Apply exercise filter (by exercise_id if selected)
-  if (selectedExercise.value) {
+  if (selectedExercise.value !== null && selectedExercise.value !== undefined) {
     filtered = filtered.filter((result) => {
-      return result.exercise_id === selectedExercise.value;
+      return result.exercise_id === parseInt(selectedExercise.value);
     });
   }
 

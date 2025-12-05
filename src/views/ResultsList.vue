@@ -45,7 +45,7 @@ const fetchAthleteInfo = async () => {
 // Fetch all exercises for the filter dropdown
 const fetchExercises = () => {
   // Coaches can see all exercises, athletes see their own
-  const params = isCoachView.value ? {} : { created_by: user.userId };
+  const params = {};
   ExerciseServices.getAll(params)
     .then((response) => {
       exercises.value = response.data;

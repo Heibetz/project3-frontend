@@ -103,7 +103,7 @@ onMounted(() => {
             </v-col>
             <v-col>
               <v-btn variant="outlined" @click="cancel" block>
-                Cancel
+                Cancel Changes
               </v-btn>
             </v-col>
           </v-row>

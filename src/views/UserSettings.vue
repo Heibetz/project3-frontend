@@ -8,6 +8,7 @@ const user = Utils.getStore("user");
 const message = ref("");
 const messageType = ref("success");
 const sport = ref(user.sport || null);
+const originalSport = ref(user.sport || null); // Store original value
 
 const sports = [
   "baseball",
@@ -37,7 +38,14 @@ const saveSport = () => {
   }, 2000);
 };
 
-
+const cancel = () => {
+  // Reset to original value (discard changes)
+  sport.value = originalSport.value;
+  
+  // Show cancellation message
+  message.value = "Changes cancelled. Settings have been reset.";
+  messageType.value = "info";
+};
 
 onMounted(() => {
   if (!user) {
@@ -94,7 +102,7 @@ onMounted(() => {
               </v-btn>
             </v-col>
             <v-col>
-              <v-btn variant="outlined" :to="{ name: 'exercises' }" block>
+              <v-btn variant="outlined" @click="cancel" block>
                 Cancel
               </v-btn>
             </v-col>

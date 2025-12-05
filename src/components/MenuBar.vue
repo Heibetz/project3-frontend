@@ -83,7 +83,6 @@ watch(() => route.path, () => {
           <v-btn class="mx-2" :to="{ name: 'athletes' }"> Athletes </v-btn>
           <v-btn class="mx-2" :to="{ name: 'exercises' }"> Exercises </v-btn>
           <v-btn class="mx-2" :to="{ name: 'exercisePlans' }"> Exercise Plans </v-btn>
-          <v-btn class="mx-2" :to="{ name: 'goals' }"> Goals </v-btn>
         </template>
 
         <!-- Admin: show management links with All Users -->
@@ -91,7 +90,6 @@ watch(() => route.path, () => {
           <v-btn class="mx-2" :to="{ name: 'users' }"> Users </v-btn>
           <v-btn class="mx-2" :to="{ name: 'exercises' }"> Exercises </v-btn>
           <v-btn class="mx-2" :to="{ name: 'exercisePlans' }"> Exercise Plans </v-btn>
-          <v-btn class="mx-2" :to="{ name: 'goals' }"> Goals </v-btn>
         </template>
       </div>
       <v-menu bottom min-width="200px" rounded offset-y v-if="user">

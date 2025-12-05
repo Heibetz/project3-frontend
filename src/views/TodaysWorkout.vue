@@ -170,9 +170,6 @@ onMounted(() => {
       <v-toolbar>
         <v-toolbar-title>Today's Workout - {{ today }}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn color="primary" :to="{ name: 'exercisePlans' }">
-          Manage Plans
-        </v-btn>
       </v-toolbar>
       <br /><br />
 
@@ -197,11 +194,8 @@ onMounted(() => {
             </v-alert>
             
             <div class="text-center">
-              <v-btn color="primary" :to="{ name: 'addExercisePlan' }" class="mr-2">
-                Create New Plan
-              </v-btn>
-              <v-btn variant="outlined" :to="{ name: 'exercisePlans' }">
-                View All Plans
+              <v-btn color="primary" :to="{ name: 'athleteDashboard' }" class="mr-2">
+                View Weekly Schedule
               </v-btn>
             </div>
           </div>

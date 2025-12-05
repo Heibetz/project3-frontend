@@ -232,6 +232,27 @@ onMounted(() => {
 
             <v-divider class="mb-4"></v-divider>
 
+            <!-- Start Workout Button (shown when workout not started) -->
+            <div v-if="!workoutStarted" class="mb-4">
+              <v-card variant="tonal" color="success">
+                <v-card-text class="text-center">
+                  <h3>Ready to Start?</h3>
+                  <div class="mt-2">
+                    <strong>{{ allExercisesToday.length }} exercises</strong> scheduled for {{ today }}
+                  </div>
+                  <div class="mt-4">
+                    <v-btn
+                      color="primary"
+                      size="large"
+                      @click="startWorkout"
+                    >
+                      Start Workout
+                    </v-btn>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </div>
+
             <!-- Exercise List -->
             <h3 class="mb-3">Exercises ({{ allExercisesToday.length }} total)</h3>
             
@@ -356,47 +377,30 @@ onMounted(() => {
               </v-card>
             </div>
 
-            <!-- Workout Actions -->
-            <v-card variant="tonal" :color="workoutStarted ? 'warning' : 'success'" class="mt-4">
+            <!-- Finish Workout Actions (shown when workout started) -->
+            <v-card v-if="workoutStarted" variant="tonal" color="warning" class="mt-4">
               <v-card-text class="text-center">
-                <div v-if="!workoutStarted">
-                  <h3>Ready to Start?</h3>
-                  <div class="mt-2">
-                    <strong>{{ allExercisesToday.length }} exercises</strong> scheduled for {{ today }}
-                  </div>
-                  <div class="mt-4">
-                    <v-btn
-                      color="primary"
-                      size="large"
-                      @click="startWorkout"
-                    >
-                      Start Workout
-                    </v-btn>
-                  </div>
+                <h3>Workout in Progress</h3>
+                <div class="mt-2 text-body-2">
+                  Enter your results above, then click Finish Workout when done.
                 </div>
-                <div v-else>
-                  <h3>Workout in Progress</h3>
-                  <div class="mt-2 text-body-2">
-                    Enter your results above, then click Finish Workout when done.
-                  </div>
-                  <div class="mt-4 d-flex justify-center ga-2">
-                    <v-btn
-                      color="success"
-                      size="large"
-                      :loading="saving"
-                      @click="finishWorkout"
-                    >
-                      Finish Workout
-                    </v-btn>
-                    <v-btn
-                      color="error"
-                      size="large"
-                      variant="outlined"
-                      @click="cancelWorkout"
-                    >
-                      Cancel
-                    </v-btn>
-                  </div>
+                <div class="mt-4 d-flex justify-center ga-2">
+                  <v-btn
+                    color="success"
+                    size="large"
+                    :loading="saving"
+                    @click="finishWorkout"
+                  >
+                    Finish Workout
+                  </v-btn>
+                  <v-btn
+                    color="error"
+                    size="large"
+                    variant="outlined"
+                    @click="cancelWorkout"
+                  >
+                    Cancel
+                  </v-btn>
                 </div>
               </v-card-text>
             </v-card>

@@ -37,7 +37,7 @@ const togglePlanExpansion = (planId) => {
 };
 
 const retrieveExercisePlans = () => {
-  const params = { created_by: user.userId };
+  const params = {};
   
   // Add sport filter if user has a sport selected
   if (user.sport) {

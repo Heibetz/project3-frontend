@@ -76,8 +76,6 @@ watch(() => route.path, () => {
           <v-btn class="mx-2" :to="{ name: 'workout' }"> Today's Workout </v-btn>
           <v-btn class="mx-2" :to="{ name: 'results' }"> Results </v-btn>
           <v-btn class="mx-2" :to="{ name: 'goals' }"> Goals </v-btn>
-          <v-btn class="mx-2" :to="{ name: 'editUser', params: { id: user.userId } }"> Edit Profile </v-btn>
-          <v-btn class="mx-2" :to="{ name: 'users' }"> Users </v-btn>
         </template>
 
         <!-- Coach: show management links with Athletes -->

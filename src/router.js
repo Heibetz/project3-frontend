@@ -19,6 +19,7 @@ import CoachDashboard from "./views/CoachDashboard.vue";
 import AdminDashboard from "./views/AdminDashboard.vue";
 import UserSettings from "./views/UserSettings.vue";
 import Goals from "./views/Goals.vue";
+import UserGoals from "./views/UserGoals.vue";
 //test
 
 const router = createRouter({
@@ -62,6 +63,13 @@ const router = createRouter({
       path: "/athletes",
       name: "athletes",
       component: AthletesList,
+      meta: { role: "coach" },
+    },
+    {
+      path: "/athletes/:id/goals",
+      name: "athleteGoals",
+      component: UserGoals,
+      props: true,
       meta: { role: "coach" },
     },
     {

@@ -23,6 +23,7 @@ const fetchAthletes = async () => {
 const goAdd = () => router.push({ name: "addUser" });
 const goEdit = (id) => router.push({ name: "editUser", params: { id } });
 const viewResults = (id) => router.push({ name: "athleteResults", params: { id } });
+const viewGoals = (id) => router.push({ name: "athleteGoals", params: { id } });
 const remove = async (id) => {
   if (confirm("Are you sure you want to delete this athlete?")) {
     try {
@@ -94,6 +95,15 @@ onMounted(fetchAthletes);
               >
                 <v-icon left size="small">mdi-chart-line</v-icon>
                 View Results
+              </v-btn>
+              <v-btn 
+                size="small" 
+                color="info" 
+                class="mr-2" 
+                @click="viewGoals(athlete.id)"
+              >
+                <v-icon left size="small">mdi-target</v-icon>
+                View Goals
               </v-btn>
               <v-btn 
                 size="small" 
